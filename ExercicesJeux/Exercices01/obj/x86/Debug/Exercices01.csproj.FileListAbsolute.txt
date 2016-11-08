@@ -26,3 +26,4 @@ C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasm
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\unicornAttack.png
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\douche-JhonnyBravo.png
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\fondPlanet.png
+C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\Haltère.png

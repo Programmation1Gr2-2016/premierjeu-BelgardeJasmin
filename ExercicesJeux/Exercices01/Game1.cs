@@ -14,6 +14,7 @@ namespace Exercices01
         Rectangle fenetre;
         GameObject heros;
         GameObject enemies;
+        GameObject ovni;
         Texture2D fond;
   
 
@@ -64,6 +65,12 @@ namespace Exercices01
             enemies.vitesse = -10;
             enemies.sprite = Content.Load<Texture2D>("douche-JhonnyBravo.png");
             enemies.position = enemies.sprite.Bounds;
+
+            ovni = new GameObject();
+            ovni.estVivant = true;
+            ovni.vitesse = 15;
+            ovni.sprite = Content.Load<Texture2D>("Haltère.png");
+            ovni.position = ovni.sprite.Bounds;
            
 
             // TODO: use this.Content to load your game content here
@@ -86,7 +93,8 @@ namespace Exercices01
         protected override void Update(GameTime gameTime)
         {
             enemies.position.Y += enemies.vitesse;
- UpdateEnnemies();
+            ovni.position.X -= ovni.vitesse;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if ((Keyboard.GetState().IsKeyDown(Keys.D)) || (Keyboard.GetState().IsKeyDown(Keys.Right)))
@@ -110,7 +118,8 @@ namespace Exercices01
             }
             // TODO: Add your update logic here
             UpdateHeros();
-          
+           UpdateEnnemies();
+            UpdateOvni();
             base.Update(gameTime);
         }
         protected void UpdateHeros()
@@ -133,6 +142,13 @@ namespace Exercices01
             {
                 heros.position.Y = fenetre.Bottom - heros.sprite.Height;
             }
+            if (heros.position.Intersects(ovni.position))
+            {
+                
+                heros.position = heros.sprite.Bounds;
+                ovni.estVivant = false;
+            }
+            
         }
         protected void UpdateEnnemies()
         {
@@ -147,6 +163,25 @@ namespace Exercices01
                 enemies.position.Y = fenetre.Bottom - enemies.sprite.Height;
                 enemies.vitesse = -10;
             }
+            if (enemies.position.Intersects(heros.position))
+            {
+                enemies.estVivant = false;
+            }
+        }
+        protected void UpdateOvni()
+        {
+            
+            if (ovni.position.X < fenetre.Left)
+            {
+                ovni.estVivant = false;
+                ovni.position.X = enemies.position.X;
+                ovni.position.Y = enemies.position.Y + 15;
+                spriteBatch.Begin();
+                
+                spriteBatch.Draw(ovni.sprite, ovni.position, Color.White);
+               
+                spriteBatch.End();
+            }
         }
         /// <summary>
         /// This is called when the game should draw itself.
@@ -158,6 +193,7 @@ namespace Exercices01
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.Draw(ovni.sprite, ovni.position, Color.White);
             spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
             spriteBatch.Draw(heros.sprite, heros.position, Color.White);
             spriteBatch.End();

@@ -57,7 +57,9 @@
     <Content Include="Content\fondPlanet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Haltère.png" />
+    <Content Include="Content\Haltère.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\unicornAttack.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
