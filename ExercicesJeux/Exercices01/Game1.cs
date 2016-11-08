@@ -13,6 +13,9 @@ namespace Exercices01
         SpriteBatch spriteBatch;
         Rectangle fenetre;
         GameObject heros;
+        GameObject enemies;
+        Texture2D fond;
+  
 
 
         public Game1()
@@ -48,14 +51,20 @@ namespace Exercices01
             fenetre = graphics.GraphicsDevice.Viewport.Bounds;
             fenetre.Width = graphics.GraphicsDevice.DisplayMode.Width;
             fenetre.Height = graphics.GraphicsDevice.DisplayMode.Height;
-#
+            this.fond = Content.Load<Texture2D>("fondPlanet.png");
 
             heros = new GameObject();
             heros.estVivant = true;
             heros.vitesse = 5;
             heros.sprite = Content.Load<Texture2D>("unicornAttack.png");
             heros.position = heros.sprite.Bounds;
-          
+
+            enemies = new GameObject();
+            enemies.estVivant = true;
+            enemies.vitesse = -10;
+            enemies.sprite = Content.Load<Texture2D>("douche-JhonnyBravo.png");
+            enemies.position = enemies.sprite.Bounds;
+           
 
             // TODO: use this.Content to load your game content here
         }
@@ -76,6 +85,8 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            enemies.position.Y += enemies.vitesse;
+ UpdateEnnemies();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if ((Keyboard.GetState().IsKeyDown(Keys.D)) || (Keyboard.GetState().IsKeyDown(Keys.Right)))
@@ -99,6 +110,7 @@ namespace Exercices01
             }
             // TODO: Add your update logic here
             UpdateHeros();
+          
             base.Update(gameTime);
         }
         protected void UpdateHeros()
@@ -117,9 +129,23 @@ namespace Exercices01
             {
                 heros.position.Y = fenetre.Top;
             }
-            if (heros.position.Y > fenetre.Bottom)
+            if (heros.position.Y + heros.sprite.Height > fenetre.Bottom)
             {
-                heros.position.Y = fenetre.Bottom;
+                heros.position.Y = fenetre.Bottom - heros.sprite.Height;
+            }
+        }
+        protected void UpdateEnnemies()
+        {
+            if (enemies.position.Y < fenetre.Top)
+            {
+                enemies.position.Y = fenetre.Top;
+                enemies.vitesse = 10;
+            }
+
+            if (enemies.position.Y + enemies.sprite.Height > fenetre.Bottom)
+            {
+                enemies.position.Y = fenetre.Bottom - enemies.sprite.Height;
+                enemies.vitesse = -10;
             }
         }
         /// <summary>
@@ -128,8 +154,11 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            enemies.position.X = (fenetre.Right - enemies.sprite.Width);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
             spriteBatch.Draw(heros.sprite, heros.position, Color.White);
             spriteBatch.End();
             // TODO: Add your drawing code here
