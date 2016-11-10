@@ -17,7 +17,7 @@ namespace Exercices01
         GameObject enemies;
         GameObject[] ovni = new GameObject[10];
         Texture2D fond;
-        Random alVitesseY = new Random();
+        Random alVitesse = new Random();
 
 
 
@@ -77,7 +77,9 @@ namespace Exercices01
             {
                 ovni[i] = new GameObject();
                 ovni[i].estVivant = true;
-                ovni[i].vitesseX = 15;
+
+                ovni[i].vitesseX = alVitesse.Next(0, 21);
+                ovni[i].vitesseY = alVitesse.Next(0, 21);
                 ovni[i].sprite = Content.Load<Texture2D>("Haltère.png");
                 ovni[i].position = ovni[i].sprite.Bounds;
                 ovni[i].position.X = enemies.position.X;
@@ -209,9 +211,11 @@ namespace Exercices01
         {
             for (int i = 0; i < ovni.Length; i++)
             {
-                if (ovni[i].position.X < fenetre.Left)
+                if ((ovni[i].position.X < fenetre.Left)||(ovni[i].position.Y < fenetre.Top )||(ovni[i].position.Y > fenetre.Bottom))
                 {
 
+                    ovni[i].vitesseX = alVitesse.Next(0, 21);
+                    ovni[i].vitesseY = alVitesse.Next(0, 21);
                     ovni[i].position.X = enemies.position.X;
                     ovni[i].position.Y = enemies.position.Y + 15;
 
