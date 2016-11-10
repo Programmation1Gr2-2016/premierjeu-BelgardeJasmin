@@ -12,7 +12,8 @@ namespace Exercices01
     class GameObject
     {
         public Rectangle position;
-        public int vitesse;
+        public int vitesseX;
+        public int vitesseY;
         public Texture2D sprite;
         public bool estVivant;
 
