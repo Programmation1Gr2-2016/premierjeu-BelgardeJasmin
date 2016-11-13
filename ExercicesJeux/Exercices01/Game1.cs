@@ -17,11 +17,13 @@ namespace Exercices01
         Rectangle fenetre;
         GameObject heros;
         GameObject enemies;
-        GameObject[] ovni = new GameObject[2];
+        GameObject[] ovni = new GameObject[10];
         Texture2D fond;
         Random alVitesse = new Random();
         GameObject menu;
         long spawnTime = 0;
+        long dureeRalenti = 0;
+        bool renlenti = false;
         long tempsDeChargement = 0;
         byte pourcentagePar5 = 0;
         GameObject BarreChargementRouge;
@@ -88,8 +90,18 @@ namespace Exercices01
                 ovni[i] = new GameObject();
                 ovni[i].estVivant = true;
 
-                ovni[i].vitesseX = alVitesse.Next(20, 50);
-                ovni[i].vitesseY = alVitesse.Next(-20, -1);
+                ovni[i].vitesseX = alVitesse.Next(5, 25);
+                switch (alVitesse.Next(0, 2))
+                {
+                    case 1:
+                        ovni[i].vitesseY = alVitesse.Next(-24, -4);
+                        break;
+                    case 0:
+                        ovni[i].vitesseY = alVitesse.Next(5, 25);
+                        break;
+                }
+
+
                 ovni[i].sprite = Content.Load<Texture2D>("Haltère.png");
                 ovni[i].position = ovni[i].sprite.Bounds;
                 ovni[i].position.X = enemies.position.X;
@@ -136,19 +148,35 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+
+            #region "vitesse enemie/ovni"
             if (enemies.estVivant)
             {
                 enemies.position.Y += enemies.vitesseX;
             }
+            if (renlenti)
+            {
+                for (int i = 0; i < ovni.Length; i++)
+                {
 
-            for (int i = 0; i < ovni.Length; i++)
+                    ovni[i].position.X -= (ovni[i].vitesseX) / 2;
+                    ovni[i].position.Y += (ovni[i].vitesseY) / 2;
+                }
+            }
+            else
             {
 
-                ovni[i].position.X -= ovni[i].vitesseX;
-                ovni[i].position.Y += ovni[i].vitesseY;
+                for (int i = 0; i < ovni.Length; i++)
+                {
+
+                    ovni[i].position.X -= ovni[i].vitesseX;
+                    ovni[i].position.Y += ovni[i].vitesseY;
+                }
             }
 
+            #endregion
 
+            #region "fonction touches"
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if ((Keyboard.GetState().IsKeyDown(Keys.D)) || (Keyboard.GetState().IsKeyDown(Keys.Right)))
@@ -170,16 +198,26 @@ namespace Exercices01
             {
                 heros.position.Y += heros.vitesseX;
             }
-            if ((Keyboard.GetState().IsKeyDown(Keys.Space)) && (pourcentagePar5 >=20))
+            if ((Keyboard.GetState().IsKeyDown(Keys.Space)) && (pourcentagePar5 >= 20))
             {
                 pourcentagePar5 = 0;
+                renlenti = true;
             }
+
+            #endregion
             // TODO: Add your update logic here
+            #region "update"
             UpdateHeros();
             UpdateEnnemies();
             UpdateOvni();
-            UpdateBarreChargement(gameTime);
+
+            if (renlenti == false)
+            {
+                UpdateBarreChargement(gameTime);
+            }
+
             base.Update(gameTime);
+            #endregion
         }
         protected void UpdateHeros()
         {
@@ -212,15 +250,19 @@ namespace Exercices01
                     ovni[i].position.Y = enemies.position.Y + 15;
                     if (pourcentagePar5 < 20)
                     {
-                        if (pourcentagePar5 < 5)
+                        if (pourcentagePar5 < 2)
                         {
                             pourcentagePar5 = 0;
                         }
                         else
                         {
 
-                            pourcentagePar5 -= 5;
+                            pourcentagePar5 -= 2;
                         }
+                    }
+                    if (renlenti)
+                    {
+                        renlenti = false;
                     }
 
                 }
@@ -228,6 +270,7 @@ namespace Exercices01
 
 
         }
+
         protected void UpdateEnnemies()
         {
 
@@ -257,7 +300,15 @@ namespace Exercices01
                 {
 
                     ovni[i].vitesseX = alVitesse.Next(0, 21);
-                    ovni[i].vitesseY = alVitesse.Next(-20, 21);
+                    switch (alVitesse.Next(0, 2))
+                    {
+                        case 1:
+                            ovni[i].vitesseY = alVitesse.Next(-24, -4);
+                            break;
+                        case 0:
+                            ovni[i].vitesseY = alVitesse.Next(5, 25);
+                            break;
+                    }
                     ovni[i].position.X = enemies.position.X;
                     ovni[i].position.Y = enemies.position.Y + 15;
 
@@ -270,7 +321,7 @@ namespace Exercices01
         protected void UpdateBarreChargement(GameTime gametime)
         {
             tempsDeChargement += gametime.ElapsedGameTime.Milliseconds;
-            if ((tempsDeChargement > 500) && (pourcentagePar5 < 20))
+            if ((tempsDeChargement > 1000) && (pourcentagePar5 < 20))
             {
                 pourcentagePar5 += 1;
 
@@ -280,6 +331,21 @@ namespace Exercices01
 
         }
 
+        protected void PouvoirRenlentie(bool renlenti)
+        {
+            if (renlenti)
+            {
+                enemies.vitesseY /= 2;
+                for (int i = 0; i < ovni.Length; i++)
+                {
+                    ovni[i].vitesseX /= 2;
+                    ovni[i].vitesseY /= 2;
+
+                }
+
+
+            }
+        }
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -290,23 +356,51 @@ namespace Exercices01
             enemies.position.X = (fenetre.Right - enemies.sprite.Width);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            #region "si est ralentit"
+            if (renlenti)
+            {
+                spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.Purple);
+                spriteBatch.Draw(BarreChargementRouge.sprite, BarreChargementRouge.position, Color.Purple);
 
-            spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
-            spriteBatch.Draw(BarreChargementRouge.sprite, BarreChargementRouge.position, Color.White);
-            for (int i = 0; i < pourcentagePar5; i++)
-            {
-                spriteBatch.Draw(TabChargementVert[i].sprite, TabChargementVert[i].position, Color.White);
-            }
-            for (int i = 0; i < ovni.Length; i++)
-            {
-                if (enemies.estVivant == true)
+                for (int i = 0; i < pourcentagePar5; i++)
                 {
-                    spriteBatch.Draw(ovni[i].sprite, ovni[i].position, Color.White);
-                    spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
+                    spriteBatch.Draw(TabChargementVert[i].sprite, TabChargementVert[i].position, Color.Purple);
                 }
-            }
+                for (int i = 0; i < ovni.Length; i++)
+                {
+                    if (enemies.estVivant == true)
+                    {
+                        spriteBatch.Draw(ovni[i].sprite, ovni[i].position, Color.Blue);
+                        spriteBatch.Draw(enemies.sprite, enemies.position, Color.Purple);
+                    }
+                }
 
-            spriteBatch.Draw(heros.sprite, heros.position, Color.White);
+                spriteBatch.Draw(heros.sprite, heros.position, Color.White);
+            }
+            #endregion
+
+            #region "normale"
+            else
+            {
+                spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+                spriteBatch.Draw(BarreChargementRouge.sprite, BarreChargementRouge.position, Color.White);
+
+                for (int i = 0; i < pourcentagePar5; i++)
+                {
+                    spriteBatch.Draw(TabChargementVert[i].sprite, TabChargementVert[i].position, Color.White);
+                }
+                for (int i = 0; i < ovni.Length; i++)
+                {
+                    if (enemies.estVivant == true)
+                    {
+                        spriteBatch.Draw(ovni[i].sprite, ovni[i].position, Color.White);
+                        spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
+                    }
+                }
+
+                spriteBatch.Draw(heros.sprite, heros.position, Color.White);
+            }
+            #endregion
             spriteBatch.End();
 
 
