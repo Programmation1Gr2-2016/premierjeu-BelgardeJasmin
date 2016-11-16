@@ -1,8 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
+
 using System.Collections.Generic;
+
 
 namespace Exercices01
 {
@@ -11,7 +15,8 @@ namespace Exercices01
     /// </summary>
     public class Game1 : Game
     {
-        DateTime dateTime;
+        Song Tetris;
+        SoundEffect hennissement;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Rectangle fenetre;
@@ -28,7 +33,8 @@ namespace Exercices01
         byte pourcentagePar5 = 0;
         GameObject BarreChargementRouge;
         GameObject[] TabChargementVert = new GameObject[20];
-
+        SpriteFont Load;
+        
 
 
         public Game1()
@@ -61,25 +67,34 @@ namespace Exercices01
         protected override void LoadContent()
         {
 
+            Load = Content.Load<SpriteFont>("Load");
+
+            Tetris = Content.Load<Song>("tetris-gameboy-02");
+            MediaPlayer.Volume = (float)(0.1);
+            MediaPlayer.Play(Tetris);
+            
+           
+            hennissement = Content.Load<SoundEffect>("sf_hennissement_01");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             fenetre = graphics.GraphicsDevice.Viewport.Bounds;
             fenetre.Width = graphics.GraphicsDevice.DisplayMode.Width;
             fenetre.Height = graphics.GraphicsDevice.DisplayMode.Height;
-            this.fond = Content.Load<Texture2D>("fondPlanet.png");
+            this.fond = Content.Load<Texture2D>("ListeSprite\\fondPlanet");
             #region "Heros"
             heros = new GameObject();
             heros.estVivant = true;
             heros.vitesseX = 10;
-            heros.sprite = Content.Load<Texture2D>("unicornAttack.png");
+            heros.sprite = Content.Load<Texture2D>("ListeSprite\\unicornAttack");
             heros.position = heros.sprite.Bounds;
             #endregion
+
 
             #region "enemies"
             enemies = new GameObject();
             enemies.estVivant = true;
             enemies.vitesseX = -10;
-            enemies.sprite = Content.Load<Texture2D>("douche-JhonnyBravo.png");
+            enemies.sprite = Content.Load<Texture2D>("ListeSprite\\douche-JhonnyBravo");
             enemies.position = enemies.sprite.Bounds;
             enemies.position.X = (fenetre.Right - enemies.sprite.Width);
             #endregion
@@ -102,7 +117,7 @@ namespace Exercices01
                 }
 
 
-                ovni[i].sprite = Content.Load<Texture2D>("Haltère.png");
+                ovni[i].sprite = Content.Load<Texture2D>("ListeSprite\\Haltère");
                 ovni[i].position = ovni[i].sprite.Bounds;
                 ovni[i].position.X = enemies.position.X;
                 ovni[i].position.Y = enemies.position.Y + 15;
@@ -111,7 +126,7 @@ namespace Exercices01
             #endregion
             #region "ChargementBarreRouge
             BarreChargementRouge = new GameObject();
-            BarreChargementRouge.sprite = Content.Load<Texture2D>("BarreDeChargementRouge.png");
+            BarreChargementRouge.sprite = Content.Load<Texture2D>("ListeSprite\\BarreDeChargementRouge");
             BarreChargementRouge.position = BarreChargementRouge.sprite.Bounds;
             BarreChargementRouge.position.X = ((fenetre.Width / 2) - (BarreChargementRouge.sprite.Width / 2));
             BarreChargementRouge.position.Y = (fenetre.Height - BarreChargementRouge.sprite.Height);
@@ -123,7 +138,7 @@ namespace Exercices01
                 TabChargementVert[i] = new GameObject();
 
 
-                TabChargementVert[i].sprite = Content.Load<Texture2D>("BarreChargementvert5%.png");
+                TabChargementVert[i].sprite = Content.Load<Texture2D>("ListeSprite\\BarreChargementvert5%");
                 TabChargementVert[i].position = TabChargementVert[i].sprite.Bounds;
                 TabChargementVert[i].position.X = (BarreChargementRouge.position.X + (i * TabChargementVert[i].sprite.Width));
                 TabChargementVert[i].position.Y = BarreChargementRouge.position.Y;
@@ -148,7 +163,6 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
             #region "vitesse enemie/ovni"
             if (enemies.estVivant)
             {
@@ -175,7 +189,7 @@ namespace Exercices01
             }
 
             #endregion
-
+            
             #region "fonction touches"
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -200,7 +214,7 @@ namespace Exercices01
             }
             if ((Keyboard.GetState().IsKeyDown(Keys.Space)) && (pourcentagePar5 >= 20))
             {
-                pourcentagePar5 = 0;
+
                 renlenti = true;
             }
 
@@ -211,10 +225,9 @@ namespace Exercices01
             UpdateEnnemies();
             UpdateOvni();
 
-            if (renlenti == false)
-            {
-                UpdateBarreChargement(gameTime);
-            }
+
+            UpdateBarreChargement(gameTime);
+
 
             base.Update(gameTime);
             #endregion
@@ -243,7 +256,7 @@ namespace Exercices01
             {
                 if ((heros.position.Intersects(ovni[i].position)) && (enemies.estVivant == true))
                 {
-
+                    hennissement.Play();
                     heros.position = heros.sprite.Bounds;
 
                     ovni[i].position.X = enemies.position.X;
@@ -263,6 +276,7 @@ namespace Exercices01
                     if (renlenti)
                     {
                         renlenti = false;
+                        pourcentagePar5 = 0;
                     }
 
                 }
@@ -321,13 +335,33 @@ namespace Exercices01
         protected void UpdateBarreChargement(GameTime gametime)
         {
             tempsDeChargement += gametime.ElapsedGameTime.Milliseconds;
-            if ((tempsDeChargement > 1000) && (pourcentagePar5 < 20))
+
+            if (renlenti)
             {
-                pourcentagePar5 += 1;
-
-
-                tempsDeChargement = 0;
+                if (tempsDeChargement > 1000)
+                {
+                    pourcentagePar5 -= 4;
+                    tempsDeChargement = 0;
+                }
+                if (pourcentagePar5 == 0)
+                {
+                    renlenti = false;
+                }
             }
+            else
+            {
+                if ((tempsDeChargement > 750) && (pourcentagePar5 < 20))
+                {
+                    pourcentagePar5 += 1;
+
+
+                    tempsDeChargement = 0;
+                }
+            }
+
+
+
+
 
         }
 
@@ -401,6 +435,9 @@ namespace Exercices01
                 spriteBatch.Draw(heros.sprite, heros.position, Color.White);
             }
             #endregion
+
+
+            spriteBatch.DrawString(Load, "Appuyer sur SPACEBARRE pour activer le pouvoir", new Vector2(BarreChargementRouge.position.X + 250 , BarreChargementRouge.position.Y ), Color.White);
             spriteBatch.End();
 
 

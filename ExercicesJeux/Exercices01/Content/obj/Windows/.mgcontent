@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Profile>Reach</Profile>
+  <Platform>Windows</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/BarreChargementVert5%.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/BarreDeChargementRouge.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/douche-JhonnyBravo.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/fondPlanet.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/Haltère.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/ListeSprite/unicornAttack.png</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/Load.spritefont</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/tetris-gameboy-02.mp3</File>
+    <File>C:/Users/Popodoudi/Documents/Visual Studio 2015/Projects/premierjeu-BelgardeJasmin/ExercicesJeux/Exercices01/Content/sf_hennissement_01.mp3</File>
+  </SourceFiles>
+</SourceFileCollection>

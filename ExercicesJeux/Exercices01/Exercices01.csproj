@@ -51,22 +51,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\BarreChargementVert5%25.png">
+    <Content Include="Content\ListeSprite\BarreChargementVert5%25.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\BarreDeChargementRouge.png">
+    <Content Include="Content\ListeSprite\BarreDeChargementRouge.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\douche-JhonnyBravo.png">
+    <Content Include="Content\ListeSprite\douche-JhonnyBravo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\fondPlanet.png">
+    <Content Include="Content\ListeSprite\fondPlanet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Haltère.png">
+    <Content Include="Content\ListeSprite\Haltère.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\unicornAttack.png">
+    <Content Include="Content\ListeSprite\unicornAttack.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\sf_hennissement_01.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\tetris-gameboy-02.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
