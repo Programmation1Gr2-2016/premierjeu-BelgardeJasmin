@@ -34,7 +34,7 @@ namespace Exercices01
         GameObject BarreChargementRouge;
         GameObject[] TabChargementVert = new GameObject[20];
         SpriteFont Load;
-        
+
 
 
         public Game1()
@@ -71,9 +71,10 @@ namespace Exercices01
 
             Tetris = Content.Load<Song>("tetris-gameboy-02");
             MediaPlayer.Volume = (float)(0.1);
+
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(Tetris);
-            
-           
+
             hennissement = Content.Load<SoundEffect>("sf_hennissement_01");
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -103,18 +104,14 @@ namespace Exercices01
             for (int i = 0; i < ovni.Length; i++)
             {
                 ovni[i] = new GameObject();
-                ovni[i].estVivant = true;
+                ovni[i].estVivant = false;
 
-                ovni[i].vitesseX = alVitesse.Next(5, 25);
-                switch (alVitesse.Next(0, 2))
-                {
-                    case 1:
-                        ovni[i].vitesseY = alVitesse.Next(-24, -4);
-                        break;
-                    case 0:
-                        ovni[i].vitesseY = alVitesse.Next(5, 25);
-                        break;
-                }
+                ovni[i].vitesseX = 0;
+
+                ovni[i].vitesseY = 0;
+
+                ovni[i].position.X = enemies.position.X;
+                ovni[i].position.Y = enemies.position.Y + 15;
 
 
                 ovni[i].sprite = Content.Load<Texture2D>("ListeSprite\\Haltère");
@@ -168,13 +165,16 @@ namespace Exercices01
             {
                 enemies.position.Y += enemies.vitesseX;
             }
+
             if (renlenti)
             {
                 for (int i = 0; i < ovni.Length; i++)
                 {
-
-                    ovni[i].position.X -= (ovni[i].vitesseX) / 2;
-                    ovni[i].position.Y += (ovni[i].vitesseY) / 2;
+                    if (ovni[i].estVivant)
+                    {
+                        ovni[i].position.X -= (ovni[i].vitesseX) / 2;
+                        ovni[i].position.Y += (ovni[i].vitesseY) / 2;
+                    }
                 }
             }
             else
@@ -183,13 +183,16 @@ namespace Exercices01
                 for (int i = 0; i < ovni.Length; i++)
                 {
 
-                    ovni[i].position.X -= ovni[i].vitesseX;
-                    ovni[i].position.Y += ovni[i].vitesseY;
+                    if (ovni[i].estVivant)
+                    {
+                        ovni[i].position.X -= (ovni[i].vitesseX) / 2;
+                        ovni[i].position.Y += (ovni[i].vitesseY) / 2;
+                    }
                 }
             }
 
             #endregion
-            
+
             #region "fonction touches"
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -223,7 +226,7 @@ namespace Exercices01
             #region "update"
             UpdateHeros();
             UpdateEnnemies();
-            UpdateOvni();
+            UpdateOvni(gameTime);
 
 
             UpdateBarreChargement(gameTime);
@@ -306,8 +309,32 @@ namespace Exercices01
 
         }
 
-        protected void UpdateOvni()
+        protected void UpdateOvni(GameTime gametime)
         {
+            if (gametime.TotalGameTime.Seconds > 3)
+            {
+
+                for (int i = 0; i < ovni.Length; i++)
+                {
+                    if (ovni[i].estVivant == false)
+                    {
+                        ovni[i].estVivant = true;
+                        ovni[i].vitesseX = alVitesse.Next(5, 25);
+                        switch (alVitesse.Next(0, 2))
+                        {
+                            case 1:
+                                ovni[i].vitesseY = alVitesse.Next(-24, -4);
+                                break;
+                            case 0:
+                                ovni[i].vitesseY = alVitesse.Next(5, 25);
+                                break;
+                        }
+                    }
+
+                }
+
+
+            }
             for (int i = 0; i < ovni.Length; i++)
             {
                 if ((ovni[i].position.X < fenetre.Left) || (ovni[i].position.Y < fenetre.Top) || (ovni[i].position.Y > fenetre.Bottom))
@@ -425,19 +452,23 @@ namespace Exercices01
                 }
                 for (int i = 0; i < ovni.Length; i++)
                 {
-                    if (enemies.estVivant == true)
+
+                    if (ovni[i].estVivant)
                     {
                         spriteBatch.Draw(ovni[i].sprite, ovni[i].position, Color.White);
-                        spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
                     }
                 }
+                if (enemies.estVivant == true)
+                {
 
+                    spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
+                }
                 spriteBatch.Draw(heros.sprite, heros.position, Color.White);
             }
             #endregion
 
 
-            spriteBatch.DrawString(Load, "Appuyer sur SPACEBARRE pour activer le pouvoir", new Vector2(BarreChargementRouge.position.X + 250 , BarreChargementRouge.position.Y ), Color.White);
+            spriteBatch.DrawString(Load, "Appuyer sur SPACEBARRE pour activer le pouvoir", new Vector2(BarreChargementRouge.position.X + 250, BarreChargementRouge.position.Y), Color.White);
             spriteBatch.End();
 
 
