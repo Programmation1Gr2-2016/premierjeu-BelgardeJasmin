@@ -20,7 +20,6 @@ C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasm
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\SharpDX.XInput.xml
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\SharpDX.RawInput.xml
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
-C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\obj\x86\Debug\Exercices01.csprojResolveAssemblyReference.cache
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\obj\x86\Debug\Exercices01.exe
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\obj\x86\Debug\Exercices01.pdb
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\Load.xnb
@@ -41,3 +40,5 @@ C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasm
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\tetris-gameboy-02.mp3
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\sf_hennissement_01.xnb
 C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\sf_hennissement_01.mp3
+C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\bin\Windows\x86\Debug\Content\ListeSprite\SpriteUnicorn.png
+C:\Users\Popodoudi\Documents\Visual Studio 2015\Projects\premierjeu-BelgardeJasmin\ExercicesJeux\Exercices01\obj\x86\Debug\Exercices01.csprojResolveAssemblyReference.cache

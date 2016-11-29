@@ -20,17 +20,19 @@ namespace Exercices01
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Rectangle fenetre;
-        GameObject heros;
+        GameObjectAnime heros;
         GameObject enemies;
-        GameObject[] ovni = new GameObject[10];
+        GameObject[] ovni = new GameObject[20];
         Texture2D fond;
         Random alVitesse = new Random();
         GameObject menu;
         long spawnTime = 0;
-        long dureeRalenti = 0;
-        bool renlenti = false;
+        KeyboardState keys = new KeyboardState();
+        KeyboardState previousKeys = new KeyboardState();
+        bool ralenti = false;
         long tempsDeChargement = 0;
         byte pourcentagePar5 = 0;
+        byte nbennemies = 4;
         GameObject BarreChargementRouge;
         GameObject[] TabChargementVert = new GameObject[20];
         SpriteFont Load;
@@ -56,7 +58,9 @@ namespace Exercices01
             // TODO: Add your initialization logic here
             this.graphics.PreferredBackBufferWidth = graphics.GraphicsDevice.DisplayMode.Width;
             this.graphics.PreferredBackBufferHeight = graphics.GraphicsDevice.DisplayMode.Height;
-            this.graphics.ToggleFullScreen();
+            this.graphics.ApplyChanges();
+            this.Window.Position = new Point(0, 0);
+
 
         }
 
@@ -83,24 +87,27 @@ namespace Exercices01
             fenetre.Height = graphics.GraphicsDevice.DisplayMode.Height;
             this.fond = Content.Load<Texture2D>("ListeSprite\\fondPlanet");
             #region "Heros"
-            heros = new GameObject();
-            heros.estVivant = true;
-            heros.vitesseX = 10;
-            heros.sprite = Content.Load<Texture2D>("ListeSprite\\unicornAttack");
-            heros.position = heros.sprite.Bounds;
+            heros = new GameObjectAnime();
+            heros.direction = Vector2.Zero;
+            heros.vitesse.X = 3;
+            heros.objetState = GameObjectAnime.etats.attenteDroite;
+            heros.position = new Rectangle(37, 9, 123, 85);   //Position initiale de heros
+            heros.sprite = Content.Load<Texture2D>("ListeSprite\\SpriteUnicorn");
             #endregion
 
 
             #region "enemies"
             enemies = new GameObject();
             enemies.estVivant = true;
-            enemies.vitesseX = -10;
+            enemies.vitesseX = 10;
             enemies.sprite = Content.Load<Texture2D>("ListeSprite\\douche-JhonnyBravo");
             enemies.position = enemies.sprite.Bounds;
             enemies.position.X = (fenetre.Right - enemies.sprite.Width);
+            enemies.position.Y = 100;
             #endregion
 
             #region "munition"
+
             for (int i = 0; i < ovni.Length; i++)
             {
                 ovni[i] = new GameObject();
@@ -110,17 +117,17 @@ namespace Exercices01
 
                 ovni[i].vitesseY = 0;
 
-                ovni[i].position.X = enemies.position.X;
-                ovni[i].position.Y = enemies.position.Y + 15;
-
 
                 ovni[i].sprite = Content.Load<Texture2D>("ListeSprite\\Haltère");
                 ovni[i].position = ovni[i].sprite.Bounds;
                 ovni[i].position.X = enemies.position.X;
                 ovni[i].position.Y = enemies.position.Y + 15;
+
+
             }
 
             #endregion
+
             #region "ChargementBarreRouge
             BarreChargementRouge = new GameObject();
             BarreChargementRouge.sprite = Content.Load<Texture2D>("ListeSprite\\BarreDeChargementRouge");
@@ -129,6 +136,7 @@ namespace Exercices01
             BarreChargementRouge.position.Y = (fenetre.Height - BarreChargementRouge.sprite.Height);
 
             #endregion
+
             #region "chargement vert"
             for (int i = 0; i < TabChargementVert.Length; i++)
             {
@@ -160,77 +168,117 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            #region "vitesse enemie/ovni"
-            if (enemies.estVivant)
-            {
-                enemies.position.Y += enemies.vitesseX;
-            }
 
-            if (renlenti)
+            heros.position.X += (int)(heros.vitesse.X * heros.direction.X);
+            #region "vitesse enemie/ovni"
+
+
+            if (ralenti)
             {
+                if (enemies.estVivant)
+                {
+                    enemies.position.Y += enemies.vitesseY / 2;
+
+                    enemies.position.X += enemies.vitesseX / 2;
+                }
                 for (int i = 0; i < ovni.Length; i++)
                 {
                     if (ovni[i].estVivant)
                     {
-                        ovni[i].position.X -= (ovni[i].vitesseX) / 2;
+                        ovni[i].position.X += (ovni[i].vitesseX) / 2;
                         ovni[i].position.Y += (ovni[i].vitesseY) / 2;
                     }
                 }
             }
             else
             {
+                if (enemies.estVivant)
+                {
+                    enemies.position.Y += enemies.vitesseY;
 
+                    enemies.position.X += enemies.vitesseX;
+                }
                 for (int i = 0; i < ovni.Length; i++)
                 {
 
                     if (ovni[i].estVivant)
                     {
-                        ovni[i].position.X -= (ovni[i].vitesseX) / 2;
-                        ovni[i].position.Y += (ovni[i].vitesseY) / 2;
+                        ovni[i].position.X += (ovni[i].vitesseX);
+                        ovni[i].position.Y += (ovni[i].vitesseY);
                     }
                 }
             }
 
             #endregion
+            keys = Keyboard.GetState();
 
             #region "fonction touches"
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            #region "Key right/D"
             if ((Keyboard.GetState().IsKeyDown(Keys.D)) || (Keyboard.GetState().IsKeyDown(Keys.Right)))
             {
 
-                heros.position.X += heros.vitesseX;
+                heros.direction.X = 4;
+                heros.objetState = GameObjectAnime.etats.runDroit;
             }
+            if (keys.IsKeyUp(Keys.Right) && previousKeys.IsKeyDown(Keys.Right) || keys.IsKeyUp(Keys.D) && previousKeys.IsKeyDown(Keys.D))
+            {
+                heros.direction.X = 0;
+                heros.objetState = GameObjectAnime.etats.attenteDroite;
+            }
+
+            #endregion
+
+            #region"key up/W"
             if ((Keyboard.GetState().IsKeyDown(Keys.W)) || (Keyboard.GetState().IsKeyDown(Keys.Up)))
             {
 
-                heros.position.Y -= heros.vitesseX;
+                heros.position.Y -= (int)heros.vitesse.X;
             }
+            if (keys.IsKeyUp(Keys.W) && previousKeys.IsKeyDown(Keys.W) || keys.IsKeyUp(Keys.Up) && previousKeys.IsKeyDown(Keys.Up))
+            {
+                heros.direction.X = 0;
+                heros.objetState = GameObjectAnime.etats.attenteDroite;
+            }
+
+            #endregion
+
             if ((Keyboard.GetState().IsKeyDown(Keys.A)) || (Keyboard.GetState().IsKeyDown(Keys.Left)))
             {
 
-                heros.position.X -= heros.vitesseX;
+                heros.direction.X = -2;
+                heros.objetState = GameObjectAnime.etats.runGauche;
+
             }
+
+
             if ((Keyboard.GetState().IsKeyDown(Keys.S)) || (Keyboard.GetState().IsKeyDown(Keys.Down)))
             {
-                heros.position.Y += heros.vitesseX;
+                heros.position.Y += (int)heros.vitesse.X;
             }
             if ((Keyboard.GetState().IsKeyDown(Keys.Space)) && (pourcentagePar5 >= 20))
             {
 
-                renlenti = true;
+                ralenti = true;
             }
-
+            else
+            {
+                  
+            }
             #endregion
             // TODO: Add your update logic here
             #region "update"
+
             UpdateHeros();
+            heros.Update(gameTime);
             UpdateEnnemies();
             UpdateOvni(gameTime);
-
+            //PouvoirRenlentie(ralenti);
 
             UpdateBarreChargement(gameTime);
-
+            previousKeys = keys;
 
             base.Update(gameTime);
             #endregion
@@ -242,7 +290,7 @@ namespace Exercices01
                 heros.position.X = fenetre.Left;
             }
 
-            if (heros.position.X + heros.sprite.Width > fenetre.Right)
+            if (heros.position.X + heros.spriteAfficher.Width > fenetre.Right)
             {
                 heros.position.X = fenetre.Right - heros.sprite.Width;
             }
@@ -251,7 +299,7 @@ namespace Exercices01
             {
                 heros.position.Y = fenetre.Top;
             }
-            if (heros.position.Y + heros.sprite.Height > fenetre.Bottom)
+            if (heros.position.Y + heros.spriteAfficher.Height > fenetre.Bottom)
             {
                 heros.position.Y = fenetre.Bottom - heros.sprite.Height;
             }
@@ -260,7 +308,8 @@ namespace Exercices01
                 if ((heros.position.Intersects(ovni[i].position)) && (enemies.estVivant == true))
                 {
                     hennissement.Play();
-                    heros.position = heros.sprite.Bounds;
+                    heros.position.X = 0;
+                    heros.position.Y = 0;
 
                     ovni[i].position.X = enemies.position.X;
                     ovni[i].position.Y = enemies.position.Y + 15;
@@ -276,9 +325,9 @@ namespace Exercices01
                             pourcentagePar5 -= 2;
                         }
                     }
-                    if (renlenti)
+                    if (ralenti)
                     {
-                        renlenti = false;
+                        ralenti = false;
                         pourcentagePar5 = 0;
                     }
 
@@ -293,14 +342,67 @@ namespace Exercices01
 
             if (enemies.position.Y < fenetre.Top)
             {
-                enemies.position.Y = fenetre.Top;
-                enemies.vitesseX = 10;
+
+
+                enemies.vitesseY = alVitesse.Next(5, 11);
+
+
+                switch (alVitesse.Next(0, 2))
+                {
+                    case 1:
+                        enemies.vitesseX = alVitesse.Next(-10, 0);
+                        break;
+                    case 0:
+                        enemies.vitesseX = alVitesse.Next(1, 11);
+                        break;
+                }
             }
 
             if (enemies.position.Y + enemies.sprite.Height > fenetre.Bottom)
             {
-                enemies.position.Y = fenetre.Bottom - enemies.sprite.Height;
-                enemies.vitesseX = -10;
+
+
+                enemies.vitesseY = alVitesse.Next(-10, 0);
+
+                switch (alVitesse.Next(0, 2))
+                {
+                    case 1:
+                        enemies.vitesseX = alVitesse.Next(1, 11);
+                        break;
+                    case 0:
+                        enemies.vitesseX = alVitesse.Next(-10, 0);
+                        break;
+                }
+            }
+            if (enemies.position.X + enemies.sprite.Width > fenetre.Right)
+            {
+
+                enemies.vitesseX = alVitesse.Next(-10, 0);
+
+                switch (alVitesse.Next(0, 2))
+                {
+                    case 1:
+                        enemies.vitesseY = alVitesse.Next(1, 11);
+                        break;
+                    case 0:
+                        enemies.vitesseY = alVitesse.Next(-10, 0);
+                        break;
+                }
+            }
+            if (enemies.position.X < fenetre.Left)
+            {
+
+                enemies.vitesseX = alVitesse.Next(1, 11);
+
+                switch (alVitesse.Next(0, 2))
+                {
+                    case 1:
+                        enemies.vitesseY = alVitesse.Next(1, 11);
+                        break;
+                    case 0:
+                        enemies.vitesseY = alVitesse.Next(-10, 0);
+                        break;
+                }
             }
             if (enemies.position.Intersects(heros.position))
             {
@@ -311,15 +413,28 @@ namespace Exercices01
 
         protected void UpdateOvni(GameTime gametime)
         {
-            if (gametime.TotalGameTime.Seconds > 3)
+            if ((gametime.TotalGameTime.Seconds > 1) && (enemies.estVivant == true))
             {
+                spawnTime += gametime.ElapsedGameTime.Milliseconds;
+                if (spawnTime > 3000)
+                {
+                    if (nbennemies < ovni.Length)
+                    {
+                        nbennemies += 1;
+                    }
 
-                for (int i = 0; i < ovni.Length; i++)
+                    spawnTime = 0;
+                }
+                for (int i = 0; i <= nbennemies - 1; i++)
                 {
                     if (ovni[i].estVivant == false)
                     {
                         ovni[i].estVivant = true;
-                        ovni[i].vitesseX = alVitesse.Next(5, 25);
+                        ovni[i].position.X = enemies.position.X;
+                        ovni[i].position.Y = enemies.position.Y + 15;
+
+
+
                         switch (alVitesse.Next(0, 2))
                         {
                             case 1:
@@ -327,6 +442,15 @@ namespace Exercices01
                                 break;
                             case 0:
                                 ovni[i].vitesseY = alVitesse.Next(5, 25);
+                                break;
+                        }
+                        switch (alVitesse.Next(0, 2))
+                        {
+                            case 1:
+                                ovni[i].vitesseX = alVitesse.Next(-24, -4);
+                                break;
+                            case 0:
+                                ovni[i].vitesseX = alVitesse.Next(5, 25);
                                 break;
                         }
                     }
@@ -339,19 +463,7 @@ namespace Exercices01
             {
                 if ((ovni[i].position.X < fenetre.Left) || (ovni[i].position.Y < fenetre.Top) || (ovni[i].position.Y > fenetre.Bottom))
                 {
-
-                    ovni[i].vitesseX = alVitesse.Next(0, 21);
-                    switch (alVitesse.Next(0, 2))
-                    {
-                        case 1:
-                            ovni[i].vitesseY = alVitesse.Next(-24, -4);
-                            break;
-                        case 0:
-                            ovni[i].vitesseY = alVitesse.Next(5, 25);
-                            break;
-                    }
-                    ovni[i].position.X = enemies.position.X;
-                    ovni[i].position.Y = enemies.position.Y + 15;
+                    ovni[i].estVivant = false;
 
                 }
             }
@@ -363,16 +475,16 @@ namespace Exercices01
         {
             tempsDeChargement += gametime.ElapsedGameTime.Milliseconds;
 
-            if (renlenti)
+            if (ralenti)
             {
-                if (tempsDeChargement > 1000)
+                if (tempsDeChargement > 500)
                 {
                     pourcentagePar5 -= 4;
                     tempsDeChargement = 0;
                 }
                 if (pourcentagePar5 == 0)
                 {
-                    renlenti = false;
+                    ralenti = false;
                 }
             }
             else
@@ -392,21 +504,21 @@ namespace Exercices01
 
         }
 
-        protected void PouvoirRenlentie(bool renlenti)
-        {
-            if (renlenti)
-            {
-                enemies.vitesseY /= 2;
-                for (int i = 0; i < ovni.Length; i++)
-                {
-                    ovni[i].vitesseX /= 2;
-                    ovni[i].vitesseY /= 2;
+        //protected void PouvoirRenlentie(bool renlenti)
+        //{
+        //    if (renlenti)
+        //    {
+        //        enemies.vitesseY /= 2;
+        //        for (int i = 0; i < ovni.Length; i++)
+        //        {
+        //            ovni[i].vitesseX /= 2;
+        //            ovni[i].vitesseY /= 2;
 
-                }
+        //        }
 
 
-            }
-        }
+        //    }
+        //}
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -414,11 +526,11 @@ namespace Exercices01
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            enemies.position.X = (fenetre.Right - enemies.sprite.Width);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             #region "si est ralentit"
-            if (renlenti)
+            if (ralenti)
             {
                 spriteBatch.Draw(this.fond, GraphicsDevice.Viewport.TitleSafeArea, Color.Purple);
                 spriteBatch.Draw(BarreChargementRouge.sprite, BarreChargementRouge.position, Color.Purple);
@@ -436,7 +548,15 @@ namespace Exercices01
                     }
                 }
 
-                spriteBatch.Draw(heros.sprite, heros.position, Color.White);
+                if ((heros.objetState == GameObjectAnime.etats.runDroit) || (heros.objetState == GameObjectAnime.etats.runDroit))
+                {
+                    spriteBatch.Draw(heros.sprite, heros.position, heros.spriteAfficher, Color.White);
+                }
+                else
+                {
+                    spriteBatch.Draw(heros.sprite, heros.position, heros.spriteAfficher, Color.White, 0, Vector2.Zero, SpriteEffects.FlipHorizontally, 0);
+                }
+
             }
             #endregion
 
@@ -463,12 +583,23 @@ namespace Exercices01
 
                     spriteBatch.Draw(enemies.sprite, enemies.position, Color.White);
                 }
-                spriteBatch.Draw(heros.sprite, heros.position, Color.White);
+                if ((heros.objetState == GameObjectAnime.etats.runDroit) || (heros.objetState == GameObjectAnime.etats.attenteDroite))
+                {
+                    spriteBatch.Draw(heros.sprite, heros.position, heros.spriteAfficher, Color.White);
+                }
+                else
+                {
+                    spriteBatch.Draw(heros.sprite, heros.position, heros.spriteAfficher, Color.White,0,Vector2.Zero,SpriteEffects.FlipHorizontally,0);
+                }
+
             }
             #endregion
 
+            if (pourcentagePar5 >= 20)
+            {
+                spriteBatch.DrawString(Load, "Appuyer sur SPACEBARRE pour activer le pouvoir", new Vector2(BarreChargementRouge.position.X + 250, BarreChargementRouge.position.Y), Color.White);
 
-            spriteBatch.DrawString(Load, "Appuyer sur SPACEBARRE pour activer le pouvoir", new Vector2(BarreChargementRouge.position.X + 250, BarreChargementRouge.position.Y), Color.White);
+            }
             spriteBatch.End();
 
 
